@@ -65,8 +65,8 @@ height:auto !important;
             $keyId = $nodge["id"];
             $adjustCard = "200%";
 
-            $nudgePng = "<img class='card' src='" . plugins_url( 'images/nudge-' . $keyId . '.png', __FILE__ ) . "' alt='$nudge' />";
-            $refPng = "<img class='card', src='" . plugins_url( 'images/reference-' . $keyId . '.png', __FILE__ ) . "' alt='$reference' />";
+            $nudgePng = "<img class='card' src='" . plugins_url( 'images/nudge-' . $keyId . '.png', __FILE__ ) . "' alt='$nudge key =#$keyId' />";
+            $refPng = "<img class='card', src='" . plugins_url( 'images/reference-' . $keyId . '.png', __FILE__ ) . "' alt='$reference key = #$keyId' />";
 
             if ( $includeText )
                 $msg .= rrwFormat::cellRow( $type, $nudgePng, $nudge, $reference, $refPng);
