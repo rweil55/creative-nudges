@@ -19,14 +19,11 @@ function DoCardRename()
     try {
          //            E:\OldD\resch\retrospective\25 things\25 things cards\25 thing png
         $sourceDire = "E:/OldD/resch/retrospective/25 things/25 things cards/25 thing png/";
-        $local_dire = "E:/OldD/resch/retrospective/25 things/Roy's workings/images/";
         $renameDire = "E:/OldD/resch/retrospective/25 things/Roy's workings/images-renamed/";
         if (! is_dir($sourceDire)) {
             throw new Exception( "Local directory $sourceDire does not exist!".PHP_EOL );
         }
-         if (! is_dir($local_dire)) {
-          //  throw new Exception( "Local directory $local_dire does not exist!".PHP_EOL );
-        }
+
      if (! is_dir($renameDire)) {
             throw new Exception( "Local directory $renameDire does not exist!".PHP_EOL );
         }
@@ -82,7 +79,7 @@ function DoFTP()
 		$debugDownloads = rrwParam::Boolean( "debugDownloads", array(), true );
 		$credentials = new FreewheelingEasy_website_ftpcredentials;
 		$local_dire = "E:/OldD/resch/retrospective/25 things/Roy's workings/images-renamed/";
-		$remoteDire = "/www-maryshaw-creative/wp-content/plugins/creative-nudges/images/";
+		$remoteDire = "/www-maryshaw-creative/wp-content/plugins/creative-nudges/images-nudges/";
 
         $server = $credentials->getFtpServer();
 		$msg .= "FTP Server: " . $server . PHP_EOL;
