@@ -47,8 +47,16 @@ require_once "rrwParam.php";
     private static function displaySql($sql, $includeText = false) {
         global $eol, $wpdb;
         $eol = "<br/>\n";
-        $recsNudge = $wpdb->get_results( $sql, ARRAY_A );
 		$msg = "";
+        $debugSearch= rrwParam::isDebugMode("debugSearch");
+
+
+        if ( $debugSearch ) $msg .= "displayssl:sql = $sql" . $eol;
+        $recsNudge = $wpdb->get_results( $sql, ARRAY_A );
+        if ( empty( $recsNudge ) || 0 == $wpdb->num_rows ) {
+			$msg .= "no records found for the search <!-- $sql --> " . $eol;
+			return $msg;
+		}
 $msg .="
 <style>
 .card{
@@ -63,24 +71,29 @@ height:auto !important;
             $nudge = $nodge["nudge"];
             $reference = $nodge["reference"];
             $keyId = $nodge["id"];
-            $adjustCard = "200%";
+			if ( $debugSearch ) $msg .= "key id = $keyId" . $eol;
+            $adjustCard = "300%";
 
-            $nudgePng = "<img class='card' src='" . plugins_url( 'images-nodges/nudge-' . $keyId . '.png', __FILE__ ) . "' alt='$nudge key =#$keyId' />";
-            $refPng = "<img class='card', src='" . plugins_url( 'images-nodges/reference-' . $keyId . '.png', __FILE__ ) . "' alt='$reference key = #$keyId' />";
+            $nudgePng = "<img class='card' src='" . plugins_url( 'images-nudges/nudge-' . $keyId . '.png', __FILE__ ) . "' alt='$nudge key =#$keyId' />";
+            $refPng = "<img class='card', src='" . plugins_url( 'images-nudges/reference-' . $keyId . '.png', __FILE__ ) . "' alt='$reference key = #$keyId' />";
+            $nudgeRef = "<img class='card' src='" . plugins_url( 'images-combined/combined-' . $keyId . '.png', __FILE__ ) . "' alt='$nudge key =#$keyId' />";
 
             if ( $includeText )
                 $msg .= rrwFormat::cellRow( $type, $nudgePng, $nudge, $reference, $refPng);
 			else
-                $msg .= "<tr><td>$nudgePng </td><td >$refPng</td></tr>";
+                $msg .= "<tr><td>&nbsp;</td><td>$nudgeRef</td><td>&nbsp;</td></tr>";
         } // end foreach
         $msg .= "</table>";
         return $msg;
     } // end displayAll
 
  public static function displayRandom($attributes) {
+    $msg = "";
 		$keyId = rand( 1, 70 );
         $sql = "select * from nodges where id = $keyId";
-		$msg = self::displaySql( $sql );
+		$images = self::displaySql( $sql );
+		$msg .= "<div style='text-align:left;'> $images ";
+
         return $msg;
     } // end display25
 
@@ -112,11 +125,11 @@ public static function setup1($attributes) {
 
 	public static function searchNudges( $attributes ) {
 		$msg = "";
-        $searchThing = rrwParam::String( 'SearchBox', $attributes );
+	  $searchThing = rrwParam::String( 'SearchBox', $attributes );
 		if ( ! empty( $searchThing ) ) {
 			$sql = "select * from nodges where nudge like '%$searchThing%' or reference like '%$searchThing%' order by type, id";
-			$msg = "sql = $sql<br/>";
-			$msg = self::displaySql( $sql );
+			$msg .= "<!--  sql = $sql<br/> -->";
+			$msg .= self::displaySql( $sql );
 		}
         $msg .= "
         <form action='/search' >
