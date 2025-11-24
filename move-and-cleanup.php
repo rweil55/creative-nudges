@@ -3,7 +3,8 @@ print "start of cleanup" . PHP_EOL;
 print "". PHP_EOL;
 require_once "C:/inetpub/wwwroot/wx/website/ftpCredentials.php";
 require_once "rrwParam.php";
-print DoReferences() . PHP_EOL;
+    print DoReferences() . PHP_EOL;
+    print DoFetchErrorPages() . PHP_EOL;
     print DoCardRename() . PHP_EOL;
     print mergeImages() . PHP_EOL;
     print DoFtp("images-nudges") . PHP_EOL;
@@ -42,6 +43,21 @@ function DoReferences()
     $msg .= " end of the DoReferences" . PHP_EOL . PHP_EOL;
     return $msg;
 } // end DoReferences
+function DoFetchErrorPages() {
+    $msg = "";
+       $webDire = "E:/OldD/resch/retrospective/25 things/25 things web";
+    foreach (new DirectoryIterator($webDire) as $fileInfo) {
+        if ( $debugRename )$msg .= "processing file " . $fileInfo->getFilename() . PHP_EOL;
+        if($fileInfo->isFile()) {
+            $fileName = $fileInfo->getFilename();
+            if (strpos($fileName, "404") === false )
+                continue;               // not a 404 file
+            copy ("$webDire/$filename.png", "$renameDire$fileName");
+            $msg .= "Copied $fileName to $renameDire" . PHP_EOL;
+        } // end if
+    }// end foreach
+    return $msg;
+} // end DoFetchErrorPages
 function mergeImages (){
     $msg = "";
     try {

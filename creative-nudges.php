@@ -59,8 +59,9 @@ class creative_nudges
 			$msg .= "
 <style>
 .card{
-width:300px !important;
+width:400px !important;
 height:auto !important;
+margin-right:10px;
 }
 </style>
 ";

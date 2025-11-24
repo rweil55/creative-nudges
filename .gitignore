@@ -1,3 +1,8 @@
 sftp.json
 images-nudges/*
 images-combined/*
+hidden files for class definitions/*
+wp*
+wp-admin
+wp-content/
+wp-includes
