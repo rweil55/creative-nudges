@@ -35,6 +35,7 @@ ini_set("display_errors", true);
 global $eol, $errorBeg, $errorEnd;
 class creative_nudges
 {
+    private static $maxNumberOfNudges = 70;
     public static $errorBeg= "<span style='color:red; font-weight:bold;'>";
     public static $errorEnd= "</span>";
     public static $eol = "<br/>\n";
@@ -132,7 +133,7 @@ margin-right:10px;
     /**
      * Retrieves a random image from the nudges database.
      *
-     * Generates a random ID between 1 and 70 to select a random record from the
+     * Generates a random ID between 1 and $maxNumberOfNudges to select a random record from the
      * nudges database table. Optionally outputs debug information if debug mode
      * is enabled for "debugRandom".
      *
@@ -142,7 +143,7 @@ margin-right:10px;
     public static function getRandomImage()
     {
         $debugRandom = rrwParam::isDebugMode("debugRandom");
-        $keyId = floor(rand( 1, 70 ));     // assuming IDs range from 1 to 70
+        $keyId = floor(rand( 1, self::$maxNumberOfNudges ));     // assuming IDs range from 1 to $maxNumberOfNudges
         $sql = "select * from " . self::$DatabaseNudges . " where id = $keyId";
         if ($debugRandom) print "getRandomImage:sql = $sql " . self::$eol;
         $image = self::displaySql($sql);

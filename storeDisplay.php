@@ -45,8 +45,8 @@ $msg .= "<h1>Welcome to the Creative Nudges&trade;Store</h1>
                     </table>
                     &nbsp;
 			</td>
-            <td style='padding:10px'>	$imgBooklet<br />A 5.5 in X 4.25, 8 page booklet.Contains some explanation and print out of the 70 nudge cards.
-                        See for complete contents $1/booklet.<br>
+            <td style='padding:10px'>	$imgBooklet<br />An 8.5 in X 5.5, 12 page booklet. Contains some explanation, and print out of the 70 nudge cards.
+                        See ,a> href='https:/completeContents'>complete contents'</a> $1.50/booklet.<br>
                          $button4</td>
             <td style='padding:10px'>	$imgCard1<br>One card mailed randomly over a 6 month period. $70/mailing address. includes sales tax, shipping and handling<br />
                         $button4</td>

@@ -43,17 +43,18 @@ function DoReferences()
     $msg .= " end of the DoReferences" . PHP_EOL . PHP_EOL;
     return $msg;
 } // end DoReferences
-function DoFetchErrorPages() {
+function DoFetchErrorPages($debugRename = false) {
     $msg = "";
-       $webDire = "E:/OldD/resch/retrospective/25 things/25 things web";
+    $renameDire = "E:/OldD/resch/retrospective/25 things/Roy's workings/images-renamed/";
+     $webDire = "E:/OldD/resch/retrospective/25 things/25 things web";
     foreach (new DirectoryIterator($webDire) as $fileInfo) {
         if ( $debugRename )$msg .= "processing file " . $fileInfo->getFilename() . PHP_EOL;
         if($fileInfo->isFile()) {
             $fileName = $fileInfo->getFilename();
             if (strpos($fileName, "404") === false )
                 continue;               // not a 404 file
-            copy ("$webDire/$filename.png", "$renameDire$fileName");
-            $msg .= "Copied $fileName to $renameDire" . PHP_EOL;
+            copy ("$webDire/$fileName.png", "$renameDire/$fileName");
+            $msg .= "Copied $fileName to $renameDire/" . PHP_EOL;
         } // end if
     }// end foreach
     return $msg;
