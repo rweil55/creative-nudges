@@ -29,6 +29,7 @@ require_once "rrw_util_inc.php";
 require_once "rrwParam.php";
 // in this directory
 require_once "get-citation.php";
+require_once "storeDisplay.php";
 error_reporting(E_ALL);
 ini_set("display_errors", true);
 global $eol, $errorBeg, $errorEnd;
@@ -56,15 +57,6 @@ class creative_nudges
 				array_push($recsNudge, $arrayZero);;
         }
         if ( $debugSql ) $msg .= "displaySql:results = " . rrwUtil::print_r( $recsNudge, true, "DisplaySql:recsNudge" ) . $eol;
-			$msg .= "
-<style>
-.card{
-width:400px !important;
-height:auto !important;
-margin-right:10px;
-}
-</style>
-";
 		$cntOut = 0;
         foreach ($recsNudge as $recNudge) {
             $cntOut++;
@@ -76,9 +68,11 @@ margin-right:10px;
             $reference = $recNudge["reference"];
             $keyId = $recNudge["id"];
             if ($debugSql) $msg .= "key id = $keyId" . $eol;
-            $nudgePng = "<img class='card' src='" . plugins_url('images-nudges/nudge-' . $keyId . '.png', __FILE__) . "' alt='$nudge key =#$keyId' />";
-            $refPng = "<img class='card', src='" . plugins_url('images-nudges/reference-' . $keyId . '.png', __FILE__) . "' alt='$reference key = #$keyId' />";
-            $nudgeRef = "<img class='card' src='" . plugins_url('images-combined/combined-' . $keyId . '.png', __FILE__) . "' alt='$nudge key =#$keyId' align='left' />";
+            $imageDire = plugins_url("")."/creative-nudges";
+            $nudgePng = "<img class='card' src='$imageDire/images-nudges/nudge-$keyId.png' alt='$nudge key =#$keyId' />";
+            $refPng = "<img class='card', src='$imageDire/images-nudges/reference-$keyId.png' alt='$reference key =#$keyId' />";
+            $nudgeRef = "<img class='card' src='$imageDire/images-combined/combined-$keyId.png' alt='$nudge - $reference key =#$keyId'
+                                align='left' />";
             $msg .= "$nudgeRef";
         } // end foreach
         } catch (Exception $e) {
@@ -86,24 +80,74 @@ margin-right:10px;
         }
         return $msg;
     } // end displaySql
+    /**
+     * Displays search results for creative nudges or a random image if no search term provided.
+     *
+     * This method handles searching through the nudges database based on a search term
+     * from the SearchBox attribute. If a search term is provided, it searches both the
+     * 'nudge' and 'reference' fields using LIKE queries. If no search term is provided,
+     * it displays a random image instead.
+     *
+     * @param array $attributes Associative array of attributes containing search parameters
+     *                         Expected to contain 'SearchBox' key with search term
+     *
+     * @return string HTML string containing either search results or random image display
+     *               Includes debug SQL comments when debug mode is enabled
+     * @since 1.0.0
+     */
     public static function displaySearch($attributes)
     {
-        $msg = "";
+        global $wpdb;
+        $imageHTML = "";        // get an html string to display an image
         $debugRandom = rrwParam::isDebugMode("debugRandom");
         $searchThing = rrwParam::String('SearchBox', $attributes);
-        if (! empty($searchThing)) {
-            $sql = "select * from " . self::$DatabaseNudges . " where nudge like '%$searchThing%' or reference like '%$searchThing%' order by type, id";
-            $msg .= "<!--  sql = $sql<br/> -->";
-               if ($debugRandom) print "displaySearch:sql = $sql " . self::$eol;
-            $msg .= self::displaySql($sql);
+        //
+        $imageHTML .= "
+<style>
+.card{
+width:400px !important;
+height:auto !important;
+margin-right:10px;
+}
+</style>
+";
+        if (empty($searchThing)) {
+            // no search term so display a random image
+        	$image = self::getRandomImage();
+			$imageHTML .= "<div style='text-align:left;'> $image </div>";
 		} else {
-			$keyId = rand( 1, 70 );
-			$sql = "select * from " . self::$DatabaseNudges . " where id = $keyId";
-			$images = self::displaySql( $sql );
-			$msg .= "<div style='text-align:left;'> $images </div>";
+			$like_search = '%' . $wpdb->esc_like( $searchThing ) . '%';
+			$sql = $wpdb->prepare(
+				"SELECT * FROM ". self::$DatabaseNudges . " WHERE nudge LIKE %s OR reference LIKE %s ORDER BY type, id",
+				$like_search,
+				$like_search
+			);
+			$imageHTML .= "<!-- sql = $sql -->\n";
+			if ( $debugRandom )
+				print "displaySearch:sql = $sql " . self::$eol;
+			$imageHTML .= self::displaySql( $sql );
 		}
-        return $msg;
+        return $imageHTML;
     } // end displaySearch
+    /**
+     * Retrieves a random image from the nudges database.
+     *
+     * Generates a random ID between 1 and 70 to select a random record from the
+     * nudges database table. Optionally outputs debug information if debug mode
+     * is enabled for "debugRandom".
+     *
+     * @return mixed Returns the image data from the database query result
+     *
+     */
+    public static function getRandomImage()
+    {
+        $debugRandom = rrwParam::isDebugMode("debugRandom");
+        $keyId = floor(rand( 1, 70 ));     // assuming IDs range from 1 to 70
+        $sql = "select * from " . self::$DatabaseNudges . " where id = $keyId";
+        if ($debugRandom) print "getRandomImage:sql = $sql " . self::$eol;
+        $image = self::displaySql($sql);
+        return $image;
+    } // end getRandomImage
 private static function cardReferences ($attr) {
     $msg = "";
     $msg .= "/\[([^\]]*)\]/g";
@@ -285,6 +329,7 @@ add_shortcode('reference_read_page', array('creative_nudges', 'readReferencesPag
 add_shortcode('reference_read_card', array('creative_nudges', 'ReadReferencesCard'));
 add_shortcode('reference_display', array('creative_nudges', 'ReadReferencesDisplay'));
 add_shortcode('reference_check', array('creative_nudges', 'ReadReferencesCheck'));
+add_shortcode("creative_store", array('creative_store', 'displayPage'));
 add_shortcode('citation_lookup_title', function($attribute){
     $title='';
     try { $title = rrwParam::String('title', $attribute); } catch (Throwable $t) { if(isset($attribute['title'])) $title = $attribute['title']; }
