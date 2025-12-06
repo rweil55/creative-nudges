@@ -1,19 +1,21 @@
 <?php
-class creative_store {
-    public static function displayPage($attributes) {
+class creative_store
+{
+    public static function displayPage($attributes)
+    {
         // Your code to display the store page goes here
         $msg = "";
         $imgSplayed = "<img style='width:50%; height:auto; 'src=\"https://creative-nudges.com/wp-content/uploads/2025/11/splayed-cardsR90.png\" />";
-     	$imgBooklet = "<img style='width:80%; height:auto;  border: 2px solid #ccc;; ' src=\"https://creative-nudges.com/wp-content/uploads/2025/11/25-things-refs-v4-Title-Page-scaled.png\" />";
+        $imgBooklet = "<img style='width:80%; height:auto;  border: 2px solid #ccc;; ' src=\"https://creative-nudges.com/wp-content/uploads/2025/11/25-things-refs-v4-Title-Page-scaled.png\" />";
         $imgCard1 = creative_nudges::getRandomImage();
         $imgCard2 = creative_nudges::getRandomImage();
         //$imgCard =  "<img style='width:100%' src=\"" . $image . "\" />";
         //$imgCard  "<img style='width:100%' src=\"https://creative-nudges.com/wp-content/plugins/creative-nudges/images-combined/combined-57.png\" />";
-	   $button1= '<button>Add to Cart</button>';
-        $button2= '<button>Add to Cart</button>';
-        $button3= '<button>Add to Cart</button>';
-        $button4= '<button>Buy Now</button>';
-        $button5= '<button>Subscribe</button>';
+        $button1 = '<button>Add to Cart</button>';
+        $button2 = '<button>Add to Cart</button>';
+        $button3 = '<button>Add to Cart</button>';
+        $button4 = '<button>Buy Now</button>';
+        $button5 = '<button>Subscribe</button>';
         //
         $msg .= "
 <style>
@@ -24,15 +26,15 @@ margin-right:10px;
 }
 </style>
 ";
-$msg .= "<h1>Welcome to the Creative Nudges&trade;Store</h1>
+        $msg .= "<h1>Welcome to the Creative Nudges&trade;Store</h1>
         	<table>
 		<tr>
 			<td width=\"50%\" style='margin:10px'>
 				<table>
                     <tr >
                         <td colspan=\"3\" >$imgSplayed &nbsp;<br>
-                        A deck of cards, each with a “Nudge” on the blue side, and more explanation on the yellow side.
-                        70 nudge cards in all, three blank to create your specialized nudges.<hr></td>
+                        A deck of cards, each with a “Nudge” on the blue/green side, and more explanation on the yellow side.
+                        70 nudge cards in all, 2 cards with instructions.<hr></td>
                     </tr>
                     <tr>
                         <td style='padding-right:10px'> 1 to 5 decks at $23.99/ deck includes sales tax, shipping and handling<br />
@@ -56,5 +58,58 @@ $msg .= "<h1>Welcome to the Creative Nudges&trade;Store</h1>
 	</table>
     ";
         return "$msg";
-    }
+    } // end displayPage
+    public static function displayCategories($attributes)
+    {
+        global $wpdb;
+        // Your code to display categories goes here
+        $msg = "<h2>Card Categories</h2>";
+        ini_set('display_errors', 1);
+
+        $sql = "SELECT DISTINCT category FROM " . creative_nudges::$DatabaseNudges . " ORDER BY category ASC;";
+        $results = $wpdb->get_results($sql, ARRAY_A);
+        $categoryOption = "";
+        foreach ($results as $row) {
+            $cat = $row['category'];
+            if (empty($cat))
+                continue;
+            /*ondblclick='add2dropDown(radio%id);' */
+            $categoryOption .= "<input ondblclick='add2dropDown(radio%id);' type='radio' name='radio%id' > $cat <br />  </radio>";
+        }
+        $sql = "select category, nudge, reference, id from " . creative_nudges::$DatabaseNudges . " order by category, nudge;";
+        $records = $wpdb->get_results($sql, ARRAY_A);
+        $msg .= "\n <table>\n";
+        $color = rrwFormat::colorSwap();
+        foreach ($records as $rec) {
+            $nudge = $rec["nudge"];
+            if (empty($nudge))
+                continue;
+            $id = $rec['id'];
+            $cat = $rec['category'];
+            $thisCaption = str_replace("%id", $id, $categoryOption,);
+            if (! empty($cat))
+                $thisCaption = str_replace(" > $cat", " checked > $cat ", $thisCaption,);
+            $color = rrwFormat::colorSwap($color);
+            $msg .= "<tr style='background-color:$color' >\n";
+            $msg .= "  <td style='width:80px' >" . $thisCaption . "</td>\n";
+            $msg .= "  <td>" . $nudge . "</td>\n";
+            $msg .= "  <td>" . $rec['reference'] . "</td>\n";
+            $msg .= "</tr>\n";
+        }
+        $msg .= "</table>\n";
+        print "
+  <script>
+  function add2dropDown( id ) {
+                var promptText = \"Enter the new text to add to the bottom of the list \" + id.name ;
+                alert(id.name);
+                var newText = prompt(promptText, '');
+                var radioNew = document.createElement('radio');
+                radioNew.text = newText;
+                radioNew.value = newText;
+                id.add(radioNew);
+            }
+    </script>
+    ";
+        return $msg;
+    } // end displayCategories
 }

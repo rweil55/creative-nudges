@@ -1,14 +1,17 @@
 <?php
 print "start of cleanup" . PHP_EOL;
-print "". PHP_EOL;
+print "" . PHP_EOL;
 require_once "C:/inetpub/wwwroot/wx/website/ftpCredentials.php";
 require_once "rrwParam.php";
-    print DoReferences() . PHP_EOL;
+/*   print DoReferences() . PHP_EOL;
     print DoFetchErrorPages() . PHP_EOL;
     print DoCardRename() . PHP_EOL;
     print mergeImages() . PHP_EOL;
-    print DoFtp("images-nudges") . PHP_EOL;
-    print DoFtp("images-combined") . PHP_EOL;
+*/
+
+
+print DoFtp("images-nudges") . PHP_EOL;
+print DoFtp("images-combined") . PHP_EOL;
 exit;
 function DoReferences()
 {
@@ -24,7 +27,7 @@ function DoReferences()
             mkdir($outputDir, 0755, true);
         }
         if (! is_dir($imageDir)) {
-            throw new Exception( "Image directory $imageDir does not exist!".PHP_EOL );
+            throw new Exception("Image directory $imageDir does not exist!" . PHP_EOL);
         }
         // Get all reference files
         $referenceFiles = glob($imageDir . "reference-*.png");
@@ -43,23 +46,25 @@ function DoReferences()
     $msg .= " end of the DoReferences" . PHP_EOL . PHP_EOL;
     return $msg;
 } // end DoReferences
-function DoFetchErrorPages($debugRename = false) {
+function DoFetchErrorPages($debugRename = false)
+{
     $msg = "";
     $renameDire = "E:/OldD/resch/retrospective/25 things/Roy's workings/images-renamed/";
-     $webDire = "E:/OldD/resch/retrospective/25 things/25 things web";
+    $webDire = "E:/OldD/resch/retrospective/25 things/25 things web";
     foreach (new DirectoryIterator($webDire) as $fileInfo) {
-        if ( $debugRename )$msg .= "processing file " . $fileInfo->getFilename() . PHP_EOL;
-        if($fileInfo->isFile()) {
+        if ($debugRename) $msg .= "processing file " . $fileInfo->getFilename() . PHP_EOL;
+        if ($fileInfo->isFile()) {
             $fileName = $fileInfo->getFilename();
-            if (strpos($fileName, "404") === false )
+            if (strpos($fileName, "404") === false)
                 continue;               // not a 404 file
-            copy ("$webDire/$fileName.png", "$renameDire/$fileName");
+            copy("$webDire/$fileName.png", "$renameDire/$fileName");
             $msg .= "Copied $fileName to $renameDire/" . PHP_EOL;
         } // end if
-    }// end foreach
+    } // end foreach
     return $msg;
 } // end DoFetchErrorPages
-function mergeImages (){
+function mergeImages()
+{
     $msg = "";
     try {
         $msg .= "Starting image merging process..." . PHP_EOL;
@@ -72,11 +77,11 @@ function mergeImages (){
             mkdir($outputDir, 0755, true);
         }
         if (! is_dir($imageDir)) {
-            throw new Exception( "Image directory $imageDir does not exist!".PHP_EOL );
+            throw new Exception("Image directory $imageDir does not exist!" . PHP_EOL);
         }
         // Get all nudge files
-        rename ($imageDir . "nudge Card#.png", $imageDir . "nudge-qr1-code.png");
-        rename ($imageDir . "nudge Card#0.png", $imageDir . "nudge-qr2-code.png");
+        rename($imageDir . "nudge Card#.png", $imageDir . "nudge-qr1-code.png");
+        rename($imageDir . "nudge Card#0.png", $imageDir . "nudge-qr2-code.png");
         $nudgeFiles = glob($imageDir . "nudge-*.png");
         foreach ($nudgeFiles as $nudgeFile) {
             $filename = basename($nudgeFile);
@@ -97,7 +102,7 @@ function mergeImages (){
                 $msg .= "Reference file not found for nudge-$number.png" . PHP_EOL;
             }
         }
-        $msg .= self::RightHandParagraphs();
+
         $msg .= "Image merging complete!" . PHP_EOL;
     } catch (Exception $e) {
         $msg .= "Error: " . $e->getMessage() . PHP_EOL;
@@ -108,7 +113,7 @@ function mergeImages (){
 function DoCardRename()
 {
     $msg = "";
-	$debugRename = false;
+    $debugRename = false;
     try {
         $msg = "";
         $msg .= "Start of DoCardRename" . PHP_EOL;
@@ -118,33 +123,33 @@ function DoCardRename()
         $wedDire = "E:/OldD/resch/retrospective/25 things/25 things web";
         $msg .= "Source directory: $sourceDire" . PHP_EOL;
         $msg .= "Rename directory: $renameDire" . PHP_EOL;
-         //            E:\OldD\resch\retrospective\25 things\25 things cards\25 thing png
+        //            E:\OldD\resch\retrospective\25 things\25 things cards\25 thing png
         if (! is_dir($sourceDire)) {
-            throw new Exception( "Local directory $sourceDire does not exist!".PHP_EOL );
+            throw new Exception("Local directory $sourceDire does not exist!" . PHP_EOL);
         }
-     if (! is_dir($renameDire)) {
-            throw new Exception( "Local directory $renameDire does not exist!".PHP_EOL );
+        if (! is_dir($renameDire)) {
+            throw new Exception("Local directory $renameDire does not exist!" . PHP_EOL);
         }
-		$cntCopied = 0;
+        $cntCopied = 0;
         foreach (new DirectoryIterator($sourceDire) as $fileInfo) {
-             if ( $debugRename )$msg .= "processing file " . $fileInfo->getFilename() . PHP_EOL;
-            if($fileInfo->isDot())
+            if ($debugRename) $msg .= "processing file " . $fileInfo->getFilename() . PHP_EOL;
+            if ($fileInfo->isDot())
                 continue;
-            if($fileInfo->isFile()) {
+            if ($fileInfo->isFile()) {
                 $oldFilePath = $fileInfo->getPathname();
-                if ( $debugRename ) $msg .= "Processing file: $oldFilePath" . PHP_EOL;
+                if ($debugRename) $msg .= "Processing file: $oldFilePath" . PHP_EOL;
                 $oldFilename = $fileInfo->getFilename();
                 $iiPound = strpos($oldFilename, "#");
-				$fileNumber = substr( $oldFilename, $iiPound + 1 );
-				$fileNumber = str_replace( ".png", "", $fileNumber );;
+                $fileNumber = substr($oldFilename, $iiPound + 1);
+                $fileNumber = str_replace(".png", "", $fileNumber);;
                 if (is_numeric($fileNumber)) {
-                    $nudgeNumber = intval($fileNumber/2);
-                    if ( 2 > $nudgeNumber ) {
+                    $nudgeNumber = intval($fileNumber / 2);
+                    if (2 > $nudgeNumber) {
                         $msg .= "Skipping file number $oldFilename (nudge number $nudgeNumber)" . PHP_EOL;
                         continue;
                     }
-                    $nudgeNumber = $nudgeNumber -2;
-                    if (0 == $fileNumber %2 )
+                    $nudgeNumber = $nudgeNumber - 2;
+                    if (0 == $fileNumber % 2)
                         $newFilename = "nudge-$nudgeNumber.png";
                     else
                         $newFilename = "reference-$nudgeNumber.png";
@@ -154,25 +159,25 @@ function DoCardRename()
                         unlink($newFilePath);
                         continue;
                     }
-	                $msg .= "copy ($oldFilePath, $newFilePath);" . PHP_EOL;
+                    $msg .= "copy ($oldFilePath, $newFilePath);" . PHP_EOL;
                     $worked = copy($oldFilePath, $newFilePath);
                     if ($worked) {
                         $cntCopied++;
-					} else {
-						$msg .= "Failed to copy $oldFilePath to $newFilePath" . PHP_EOL;
-					}
-				} else {
-					$msg .= "Filename $oldFilename is not numeric after cleanup, skipping." . PHP_EOL;
-				}
-            }// end if
-        }// end foreach
-        copy ("$wedDire/25 things cards v5.0m.404front#.png", $renameDire . "/nudge-404.png");
-        copy ("$wedDire/25 things cards v5.0m.404back#.png", $renameDire . "/reference-404.png");
+                    } else {
+                        $msg .= "Failed to copy $oldFilePath to $newFilePath" . PHP_EOL;
+                    }
+                } else {
+                    $msg .= "Filename $oldFilename is not numeric after cleanup, skipping." . PHP_EOL;
+                }
+            } // end if
+        } // end foreach
+        copy("$wedDire/25 things cards v5.0m.404front#.png", $renameDire . "/nudge-404.png");
+        copy("$wedDire/25 things cards v5.0m.404back#.png", $renameDire . "/reference-404.png");
         $msg .= "Total files copied: $cntCopied" . PHP_EOL;
-    } catch ( Exception $e ) {
+    } catch (Exception $e) {
         $msg .= "Exception caught in DoCardRename: " . $e->getMessage() . PHP_EOL;
     }
-       $msg .= "End of DoCardRename" . PHP_EOL . PHP_EOL;
+    $msg .= "End of DoCardRename" . PHP_EOL . PHP_EOL;
     return $msg;
 } // DoCardRename
 function RightHandParagraphs()
@@ -182,60 +187,60 @@ function RightHandParagraphs()
 function DoFTP($directoryToUpload)
 {
     $msg = "";
-	try {
+    try {
         $msg = "";
         $msg .= "Start of DoFTP for directory: $directoryToUpload" . PHP_EOL;
-		$debugDownloads = rrwParam::Boolean( "debugDownloads", array(), false );
-		$credentials = new FreewheelingEasy_website_ftpcredentials;
-		$local_dire = "E:/OldD/resch/retrospective/25 things/Roy's workings/$directoryToUpload";
-		$remoteDire = "/www-maryshaw-creative/wp-content/plugins/creative-nudges/$directoryToUpload";
+        $debugDownloads = rrwParam::Boolean("debugDownloads", array(), false);
+        $credentials = new FreewheelingEasy_website_ftpcredentials;
+        $local_dire = "E:/OldD/resch/retrospective/25 things/Roy's workings/$directoryToUpload";
+        $remoteDire = "/www-maryshaw-creative/wp-content/plugins/creative-nudges/$directoryToUpload";
         $server = $credentials->getFtpServer();
-		$msg .= "FTP Server: " . $server . PHP_EOL;
-		$conn_id = ftp_connect( $server );
-		$login_result = ftp_login( $conn_id, $credentials->getFtpUser(), $credentials->getFtpPass() );
-		if ( ( ! $conn_id ) || ( ! $login_result ) ) {
-			$msg .= "E#1863 1FTP connection has failed!" . PHP_EOL;
-			$msgErr= "E#1864 Attempted to connect to " . $credentials->getFtpServer() . " for user " . $credentials->getFtpUser();
-			throw new Exception( $msgErr );
-		} else {
-			if ( $debugDownloads )
-				echo "E#1865 Connected to " . $credentials->getFtpServer() . " for user " . $credentials->getFtpUser() . PHP_EOL;
-		}
-		$result = ftp_pasv( $conn_id, true );
-		if ( ! $result ) {
-			throw new Exception( "FTP passive mode has failed!" . PHP_EOL );
-		} else {
-			if ( $debugDownloads )
-				$msg .= "Passive mode set" . PHP_EOL;
-		}
-       if (! is_dir($local_dire)) {
-            throw new Exception( "Local directory $local_dire does not exist!".PHP_EOL );
+        $msg .= "FTP Server: " . $server . PHP_EOL;
+        $conn_id = ftp_connect($server);
+        $login_result = ftp_login($conn_id, $credentials->getFtpUser(), $credentials->getFtpPass());
+        if ((! $conn_id) || (! $login_result)) {
+            $msg .= "E#1863 1FTP connection has failed!" . PHP_EOL;
+            $msgErr = "E#1864 Attempted to connect to " . $credentials->getFtpServer() . " for user " . $credentials->getFtpUser();
+            throw new Exception($msgErr);
+        } else {
+            if ($debugDownloads)
+                echo "E#1865 Connected to " . $credentials->getFtpServer() . " for user " . $credentials->getFtpUser() . PHP_EOL;
         }
-		$cntMoved = 0;
+        $result = ftp_pasv($conn_id, true);
+        if (! $result) {
+            throw new Exception("FTP passive mode has failed!" . PHP_EOL);
+        } else {
+            if ($debugDownloads)
+                $msg .= "Passive mode set" . PHP_EOL;
+        }
+        if (! is_dir($local_dire)) {
+            throw new Exception("Local directory $local_dire does not exist!" . PHP_EOL);
+        }
+        $cntMoved = 0;
         foreach (new DirectoryIterator($local_dire) as $fileInfo) {
             $cntMoved++;
-            if($cntMoved > 200) {
+            if ($cntMoved > 200) {
                 break;
             }
-            if($fileInfo->isDot()) continue;
-            if($fileInfo->isFile()) {
+            if ($fileInfo->isDot()) continue;
+            if ($fileInfo->isFile()) {
                 $localFilePath = $fileInfo->getPathname();
                 $localFilePath = str_replace("\\", "/", $localFilePath);
-                if ( $debugDownloads ) $msg .= "Processing file: $localFilePath" . PHP_EOL;
+                if ($debugDownloads) $msg .= "Processing file: $localFilePath" . PHP_EOL;
                 $remoteFilePath = $remoteDire . '/' . $fileInfo->getFilename();
-                $upload = ftp_put( $conn_id, $remoteFilePath, $localFilePath, FTP_BINARY );
-                if ( ! $upload ) {
+                $upload = ftp_put($conn_id, $remoteFilePath, $localFilePath, FTP_BINARY);
+                if (! $upload) {
                     $msg .= "E#1866 FTP upload local file '$localFilePath' to remote file '$remoteFilePath' has failed!";
                 } else {
-                        $msg .= "uploaded $remoteFilePath".  PHP_EOL;
+                    $msg .= "uploaded $remoteFilePath" .  PHP_EOL;
                 }
             }
         }
-		ftp_close( $conn_id );
+        ftp_close($conn_id);
         $msg .= "Upload $cntMoved file to $remoteDire" . PHP_EOL;
-	} catch ( Exception $e ) {
+    } catch (Exception $e) {
         $msg .= "$msg " . PHP_EOL . PHP_EOL . "E#9999 Exception caught in DoFTP: " . $e->getMessage() . PHP_EOL;
     }
     $msg .= " end of DoFTP" . PHP_EOL . PHP_EOL;
-	return $msg;
+    return $msg;
 } // DoFTP
