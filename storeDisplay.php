@@ -66,17 +66,8 @@ margin-right:10px;
         $msg = "<h2>Card Categories</h2>";
         ini_set('display_errors', 1);
 
-        $sql = "SELECT DISTINCT category FROM " . creative_nudges::$DatabaseNudges . " ORDER BY category ASC;";
-        $results = $wpdb->get_results($sql, ARRAY_A);
-        $categoryOption = "";
-        foreach ($results as $row) {
-            $cat = $row['category'];
-            if (empty($cat))
-                continue;
-            /*ondblclick='add2dropDown(radio%id);' */
-            $categoryOption .= "<input ondblclick='add2dropDown(radio%id);' type='radio' name='radio%id' > $cat <br />  </radio>";
-        }
-        $sql = "select category, nudge, reference, id from " . creative_nudges::$DatabaseNudges . " order by category, nudge;";
+
+        $sql = "select permalink , nudge, reference, id from " . creative_nudges::$DatabaseNudges . " order by id, nudge;";
         $records = $wpdb->get_results($sql, ARRAY_A);
         $msg .= "\n <table>\n";
         $color = rrwFormat::colorSwap();
@@ -85,15 +76,13 @@ margin-right:10px;
             if (empty($nudge))
                 continue;
             $id = $rec['id'];
-            $cat = $rec['category'];
-            $thisCaption = str_replace("%id", $id, $categoryOption,);
-            if (! empty($cat))
-                $thisCaption = str_replace(" > $cat", " checked > $cat ", $thisCaption,);
+            $permalink  = $rec['permalink'];
             $color = rrwFormat::colorSwap($color);
             $msg .= "<tr style='background-color:$color' >\n";
-            $msg .= "  <td style='width:80px' >" . $thisCaption . "</td>\n";
+            $msg .= "  <td style='width:130px' >" . $permalink  . "</td>\n";
             $msg .= "  <td>" . $nudge . "</td>\n";
             $msg .= "  <td>" . $rec['reference'] . "</td>\n";
+            $msg .= "  <td>$id</td>\n";
             $msg .= "</tr>\n";
         }
         $msg .= "</table>\n";
