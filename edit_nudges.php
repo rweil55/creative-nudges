@@ -104,7 +104,9 @@ class creative_edit
         if ($debugCard) $msg .= " $eol SQL to find nudge: $sqlCard $eol";
         $cards = $wpdb->get_results($sqlCard, ARRAY_A);
         if (null == $cards || 0 == count($cards)) {
-            $msg .= " $errorBeg e#901 No matching nudge found for search '$lookFor' $errorEnd  $sqlCard $eol";
+            $card = "select * from " . creative_nudges::$DatabaseNudges . " where id = 404 "; // no results
+            $cards = $wpdb->get_results($card, ARRAY_A);
+            $msg .= creative_nudges::buildImage($cards[0], "300px", "center");
             return $msg;
         }
         if ($debugCard) $msg .= " displayLookFor $sqlCard  $eol";

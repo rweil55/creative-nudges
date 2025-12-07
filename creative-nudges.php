@@ -126,7 +126,8 @@ class creative_nudges
             // if it's a short number, assume it's an ID
             return " where id = $lookFor ";
         }
-        $where = " WHERE nudge LIKE '%$lookFor%' OR reference LIKE '%$lookFor%' OR permalinkAuto LIKE '%$lookFor%' OR permalink LIKE '%$lookFor%' ";
+        $where = " WHERE (nudge LIKE '%$lookFor%' OR reference LIKE '%$lookFor%' OR permalinkAuto LIKE '%$lookFor%' OR permalink LIKE '%$lookFor%' )
+                        and not (type = 'Search Fail' or type = 'programming')";
         return $where;
     }
     /**
