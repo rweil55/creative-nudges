@@ -31,6 +31,7 @@ require_once "rrwParam.php";
 require_once "get-citation.php";
 require_once "edit_nudges.php";
 require_once "storeDisplay.php";
+require_once "pending.php";
 error_reporting(E_ALL);
 ini_set("display_errors", true);
 global $eol, $errorBeg, $errorEnd;
@@ -267,9 +268,10 @@ margin-right:10px;
 } // end class
 //
 add_shortcode('creative_nudge_author', array('creative_edit', 'author'));
+add_shortcode('creative_nudge_comment', array('creative_edit', 'editComment'));
 add_shortcode('creative_nudge_displayCard', array('creative_edit', 'editOne'));
 add_shortcode('creative_nudge_editOne', array('creative_edit', 'editOne'));
-add_shortcode('creative_nudge_all', array('creative_nudges', 'displayAll'));
+add_shortcode('creative_nudge_pending', array('creative_pending', 'pending'));
 add_shortcode('creative_nudge_permalink', array('creative_nudges', 'permalink'));
 add_shortcode('creative_nudge_random', array('creative_nudges', 'getRandomImage'));
 add_shortcode('reference_read_page', array('creative_nudges', 'readReferencesPage'));

@@ -168,39 +168,83 @@ class creative_edit
         error_reporting(E_ALL);
         $debugDisplay = rrwParam::isDebugMode("debugDisplay");
         //
-        $sql = $wpdb->prepare(
-            "SELECT author, comment, created FROM " . creative_nudges::$DatabaseComments .
-                " WHERE cardId = %d and not status='pending' ORDER BY priority asc, created DESC ",
-            $id
-        );
+        $sql = "SELECT author, comment, created, displayState  FROM " . creative_nudges::$DatabaseComments .
+            " WHERE cardId = $id ";
+        if (!is_user_logged_in())
+            $sql .= " and displayState ='approved'  ";
+        $sql .= " ORDER BY priority asc, created DESC ";
+        if ($debugDisplay) $msg .= " $eol SQL to get approved comments: $sql ";
         $results = $wpdb->get_results($sql, ARRAY_A);
+        if ($debugDisplay) $msg .= " $eol No approved comments found.";
+        // now get the count  of not approved comments
+        $sqlPending = "SELECT displayState FROM " . creative_nudges::$DatabaseComments .
+            " WHERE cardId = $id and not displayState = 'approved' ";
+        if ($debugDisplay) $msg .= " $eol Checking for pending comments with query: $sqlPending ";
+        $sqlPending = $wpdb->get_results($sqlPending, ARRAY_A);
+        if ($debugDisplay) $msg .= rrwUtil::print_r($sqlPending, true, "Pending Comments");
+        $cnt = $wpdb->num_rows;
+        if (!empty($commentSuccessful)) {   // display the successfully saved message
+            $msg .= $commentSuccessful;
+        }
+        if (0 != $cnt)
+            $msg .= " $eol$eol There are $cnt comments pending, waiting for approval. $eol $eol";
+        else
+            $msg .= "$eol$eol Be the first to make a comment $eol $eol";
+        // are there any approved comments to display?
         if (null == $results || 0 == count($results)) {
-            if ($debugDisplay) $msg .= " $eol No approved comments found.";
-            $sqlPending = "SELECT status FROM " . creative_nudges::$DatabaseComments .
-                " WHERE cardId = $id and status = 'pending' ";
-            if ($debugDisplay) $msg .= " $eol Checking for pending comments with query: $sqlPending ";
-            $sqlPending = $wpdb->get_results($sqlPending, ARRAY_A);
-            if ($debugDisplay) $msg .= rrwUtil::print_r($sqlPending, true, "Pending Comments");
-            $cnt = $wpdb->num_rows;
-            if (!empty($commentSuccessful)) {
-                $msg .= $commentSuccessful;
-            }
-            if (0 != $cnt)
-                $msg .= " $eol$eol There are $cnt comments pending, waiting for approval. $eol $eol";
-            else
-                $msg .= "$eol$eol Be the first to make a comment $eol $eol";
             return $msg;
         }
-        $msg .= "<h3> Comments </h3> $eol";
+        $msg .= "$eol $eol<h3> Comments </h3> $eol";
         if ($debugDisplay) $msg .= rrwUtil::print_r($results, true, "Approved Comments");
         foreach ($results as $row) {
             $author = $row["author"];
             $comment = $row["comment"];
             $created = $row["created"];
-            $msg .= "<b>$author</b> on $created said: $eol $comment $eol";
+            $displayState = $row["displayState"];
+            $msg .= "<a href='https://creative-nudges.com/editComment/?author=$author' ><strong>$author</strong> </a>
+                    on <a href='https://creative-nudges.com/editComments/?created=$created' >$created</a> said:
+                    <strong>$displayState</strong>$eol $comment$eol$eol";
         } // end foreach
         return $msg;
     } // end function displayComments
+
+    public static function editComment($attributes): string
+    {
+        $msg = "";
+        $id = rrwParam::Integer("id", $attributes, -1);
+        $author = rrwParam::String("author", $attributes, "");
+        $created = rrwParam::String("created", $attributes, "");
+        if ($id > 0) {
+            $keyName = "id";
+            $keyValue = $id;
+        } elseif (!empty($author)) {
+            $keyName = "author";
+            $keyValue = $author;
+        } elseif (!empty($created)) {
+            $keyName = "created";
+            $keyValue = $created;
+        } else {
+            $msg .= " Invalid or missing comment id, author, or created date. ";
+            return $msg;
+        }
+        $table = new rrwDisplayTable();
+        $msg .= $table->tableName(creative_nudges::$DatabaseComments);
+        $msg .= $table->keyName($keyName);
+        $msg .= $table->keyValue($keyValue);
+        $msg .= $table->noDelete(true);
+        $msg .= $table->columnRead("Author Name", "author", 300, 0);
+        $msg .= $table->columnRead("E-Mail", "email", 300, 0);
+        $msg .= $table->columnRead("Comment", "comment", 3000, 1);
+        $msg .= $table->columnRead("Created Date", "created", 50, 0);
+        $msg .= $table->DropDownSelf("Display State", "displayState");
+        $msg .= $table->DoAction();
+
+        $action = rrwParam::String("action", $attributes, "");
+        if (empty($action))
+            $action = "list";
+        $table->DoAction();
+        return $msg;
+    }
 
     private static function displayForm($id): string
     {
