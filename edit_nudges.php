@@ -95,7 +95,7 @@ class creative_edit
 
         if ($debugCard) $msg .= "into displayLookFor #2 with lookFor = '$lookFor' $eol";
         if (empty($lookFor)) {
-            $msg .= " $errorBeg E#900 Missing search term $errorEnd ";
+            $msg .= " $errorBeg E#2270 Missing search term $errorEnd ";
             return $msg;
         }
         $sqlWhere = creative_nudges::buildWhere($lookFor);

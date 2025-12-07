@@ -199,12 +199,12 @@ function DoFTP($directoryToUpload)
         $conn_id = ftp_connect($server);
         $login_result = ftp_login($conn_id, $credentials->getFtpUser(), $credentials->getFtpPass());
         if ((! $conn_id) || (! $login_result)) {
-            $msg .= "E#1863 1FTP connection has failed!" . PHP_EOL;
-            $msgErr = "E#1864 Attempted to connect to " . $credentials->getFtpServer() . " for user " . $credentials->getFtpUser();
+            $msg .= "E#2272 1FTP connection has failed!" . PHP_EOL;
+            $msgErr = "E#2273 Attempted to connect to " . $credentials->getFtpServer() . " for user " . $credentials->getFtpUser();
             throw new Exception($msgErr);
         } else {
             if ($debugDownloads)
-                echo "E#1865 Connected to " . $credentials->getFtpServer() . " for user " . $credentials->getFtpUser() . PHP_EOL;
+                echo "E#2274 Connected to " . $credentials->getFtpServer() . " for user " . $credentials->getFtpUser() . PHP_EOL;
         }
         $result = ftp_pasv($conn_id, true);
         if (! $result) {
@@ -230,7 +230,7 @@ function DoFTP($directoryToUpload)
                 $remoteFilePath = $remoteDire . '/' . $fileInfo->getFilename();
                 $upload = ftp_put($conn_id, $remoteFilePath, $localFilePath, FTP_BINARY);
                 if (! $upload) {
-                    $msg .= "E#1866 FTP upload local file '$localFilePath' to remote file '$remoteFilePath' has failed!";
+                    $msg .= "E#2275 FTP upload local file '$localFilePath' to remote file '$remoteFilePath' has failed!";
                 } else {
                     $msg .= "uploaded $remoteFilePath" .  PHP_EOL;
                 }
@@ -239,7 +239,7 @@ function DoFTP($directoryToUpload)
         ftp_close($conn_id);
         $msg .= "Upload $cntMoved file to $remoteDire" . PHP_EOL;
     } catch (Exception $e) {
-        $msg .= "$msg " . PHP_EOL . PHP_EOL . "E#9999 Exception caught in DoFTP: " . $e->getMessage() . PHP_EOL;
+        $msg .= "$msg " . PHP_EOL . PHP_EOL . "E#2271 Exception caught in DoFTP: " . $e->getMessage() . PHP_EOL;
     }
     $msg .= " end of DoFTP" . PHP_EOL . PHP_EOL;
     return $msg;
