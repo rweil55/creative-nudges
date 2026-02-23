@@ -27,6 +27,7 @@ require_once "display_tables_class.php";
 require_once "rrwFormat.php";
 require_once "rrw_util_inc.php";
 require_once "rrwParam.php";
+require_once "mailCredentials.php";
 // in this directory
 require_once "get-citation.php";
 require_once "edit_nudges.php";
@@ -218,6 +219,7 @@ margin-right:10px;
     {
         global $wpdbExtra;
         $msg = "";
+        /*
         $sqlAll = "select * from " . self::$DatabaseNudges;
         $recs = $wpdbExtra->get_resultsA($sqlAll);
         foreach ($recs as $rec) {
@@ -263,7 +265,25 @@ margin-right:10px;
             }
         }
 
+
+        */
+        $msg .= self::$errorBeg . " E789: permalink routine is a oe sho deal " . self::$errorEnd;
         return $msg;
+    }
+    public static function allowedToEdit(): bool
+    {
+        try {
+            if (current_user_can('edit_posts')) {
+                return true;
+            }
+        } catch (Exception $e) {
+            // ignore
+        }
+        return false;
+    }
+    public static function notAllowedToEdit(): bool
+    {
+        return !creative_nudges::allowedToEdit();
     }
 } // end class
 //

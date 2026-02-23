@@ -7,8 +7,8 @@ class creative_store
         $msg = "";
         $imgSplayed = "<img style='width:50%; height:auto; 'src=\"https://creative-nudges.com/wp-content/uploads/2025/11/splayed-cardsR90.png\" />";
         $imgBooklet = "<img style='width:80%; height:auto;  border: 2px solid #ccc;; ' src=\"https://creative-nudges.com/wp-content/uploads/2025/11/25-things-refs-v4-Title-Page-scaled.png\" />";
-        $imgCard1 = creative_nudges::getRandomImage();
-        $imgCard2 = creative_nudges::getRandomImage();
+        $imgCard1 = creative_nudges::getRandomImage(array());
+        $imgCard2 = creative_nudges::getRandomImage(array());
         //$imgCard =  "<img style='width:100%' src=\"" . $image . "\" />";
         //$imgCard  "<img style='width:100%' src=\"https://creative-nudges.com/wp-content/plugins/creative-nudges/images-combined/combined-57.png\" />";
         $button1 = '<button>Add to Cart</button>';

@@ -1,5 +1,4 @@
 <?php
-require_once "display_tables_class.php";
 class creative_pending
 {
     public static function pending($attributes)

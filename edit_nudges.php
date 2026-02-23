@@ -1,5 +1,4 @@
 <?php
-require_once "display_tables_class.php";
 class creative_edit
 {
     public static function author($attributes)
@@ -124,7 +123,7 @@ class creative_edit
 
         $msg .= self::displayComments($id);
         $msg .= self::displayForm($id);
-        if (is_user_logged_in()) {
+        if (creative_nudges::allowedToEdit()) {
             unset($_POST["submitButton"]);
             $msg .= self::editCard(array("id" => $id));
         }
@@ -156,7 +155,7 @@ class creative_edit
         return intval($id);
     } // end function get_id
     */
-    private static function displayComments($id): string
+    private static function displayComments($cardId): string
     {
         global $eol;
         global  $wpdb;
@@ -168,9 +167,9 @@ class creative_edit
         error_reporting(E_ALL);
         $debugDisplay = rrwParam::isDebugMode("debugDisplay");
         //
-        $sql = "SELECT author, comment, created, displayState  FROM " . creative_nudges::$DatabaseComments .
-            " WHERE cardId = $id ";
-        if (!is_user_logged_in())
+        $sql = "SELECT *  FROM " . creative_nudges::$DatabaseComments .
+            " WHERE cardId = $cardId ";
+        if (creative_nudges::notAllowedToEdit())
             $sql .= " and displayState ='approved'  ";
         $sql .= " ORDER BY priority asc, created DESC ";
         if ($debugDisplay) $msg .= " $eol SQL to get approved comments: $sql ";
@@ -178,7 +177,7 @@ class creative_edit
         if ($debugDisplay) $msg .= " $eol No approved comments found.";
         // now get the count  of not approved comments
         $sqlPending = "SELECT displayState FROM " . creative_nudges::$DatabaseComments .
-            " WHERE cardId = $id and not displayState = 'approved' ";
+            " WHERE cardId = $cardId and not displayState = 'approved' ";
         if ($debugDisplay) $msg .= " $eol Checking for pending comments with query: $sqlPending ";
         $sqlPending = $wpdb->get_results($sqlPending, ARRAY_A);
         if ($debugDisplay) $msg .= rrwUtil::print_r($sqlPending, true, "Pending Comments");
@@ -194,6 +193,15 @@ class creative_edit
         if (null == $results || 0 == count($results)) {
             return $msg;
         }
+        $msg .= self::displayCommentRecords($results);
+        return $msg;
+    } // end function displayComments
+    private static function displayCommentRecords($results): string
+    {
+        global $eol;
+        $debugDisplay = rrwParam::isDebugMode("debugDisplay");
+        $msg = "";
+
         $msg .= "$eol $eol<h3> Comments </h3> $eol";
         if ($debugDisplay) $msg .= rrwUtil::print_r($results, true, "Approved Comments");
         foreach ($results as $row) {
@@ -201,50 +209,83 @@ class creative_edit
             $comment = $row["comment"];
             $created = $row["created"];
             $displayState = $row["displayState"];
-            $msg .= "<a href='https://creative-nudges.com/editComment/?author=$author' ><strong>$author</strong> </a>
-                    on <a href='https://creative-nudges.com/editComments/?created=$created' >$created</a> said:
-                    <strong>$displayState</strong>$eol $comment$eol$eol";
+            $commentId = $row["id"];
+            if (creative_nudges::allowedToEdit()) {
+                $iconUrl = rrwUtil::$penIconUrl;
+                $url = "https://creative-nudges.com/edit-Comment/?action=edit&id=$commentId";
+                $msg .= "<a href='$url' >\n" .
+                    "<img src='$iconUrl' alt='Edit' width='23' height='15' ></a>";
+            }
+            $msg .= "<a href='https://creative-nudges.com/edit-Comment/?action=list&author=$author' ><strong>$author</strong> </a>";
+            if (creative_nudges::allowedToEdit()) {
+                $msg .= " on <a href='https://creative-nudges.com/edit-Comment/?action=list&created=$created' >$created</a>
+                                   <strong>$displayState</strong>$eol $comment$eol$eol";
+            } else {
+                $msg .= " on $created $eol ";
+            }
+            $msg .= "$comment$eol$eol";
         } // end foreach
         return $msg;
     } // end function displayComments
+    /*
+ * Edit an existing comment in the database
+ * first display the selected comments
 
+    */
     public static function editComment($attributes): string
     {
+        global $eol, $errorBeg, $errorEnd;
+        global $wpdbExtra;;
         $msg = "";
+        $msg .= "into editComment #8 $eol";
+        ini_set("display_errors", 1);
+        error_reporting(E_ALL);
+
         $id = rrwParam::Integer("id", $attributes, -1);
         $author = rrwParam::String("author", $attributes, "");
         $created = rrwParam::String("created", $attributes, "");
-        if ($id > 0) {
+        if (!empty($author)) {
+            $sqlAuthor = "SELECT * FROM " . creative_nudges::$DatabaseComments . " where author = '$author'";
+            $resultAuthor = $wpdbExtra->get_resultsA($sqlAuthor);
+            $msg = self::displayCommentRecords($resultAuthor);
+            return $msg;
+        } elseif (!empty($created)) {
+            $sqlCreated = "SELECT * FROM " . creative_nudges::$DatabaseComments . " where created = '$created'";
+            $resultCreated = $wpdbExtra->get_resultsA($sqlCreated);
+            $msg = self::displayCommentRecords($resultCreated);
+            return $msg;
+        } elseif ($id > 0) {
             $keyName = "id";
             $keyValue = $id;
-        } elseif (!empty($author)) {
-            $keyName = "author";
-            $keyValue = $author;
-        } elseif (!empty($created)) {
-            $keyName = "created";
-            $keyValue = $created;
-        } else {
-            $msg .= " Invalid or missing comment id, author, or created date. ";
-            return $msg;
-        }
-        $table = new rrwDisplayTable();
-        $msg .= $table->tableName(creative_nudges::$DatabaseComments);
-        $msg .= $table->keyName($keyName);
-        $msg .= $table->keyValue($keyValue);
-        $msg .= $table->noDelete(true);
-        $msg .= $table->columnRead("Author Name", "author", 300, 0);
-        $msg .= $table->columnRead("E-Mail", "email", 300, 0);
-        $msg .= $table->columnRead("Comment", "comment", 3000, 1);
-        $msg .= $table->columnRead("Created Date", "created", 50, 0);
-        $msg .= $table->DropDownSelf("Display State", "displayState");
-        $msg .= $table->DoAction();
 
-        $action = rrwParam::String("action", $attributes, "");
-        if (empty($action))
-            $action = "list";
-        $table->DoAction();
+            $msg .= "<h3> Edit Comment </h3> $eol";
+            $msg .= "Editing comment where $keyName = '$keyValue' $eol";
+
+            $table = new rrwDisplayTable();
+            $msg .= $table->tableName(creative_nudges::$DatabaseComments);
+            $msg .= $table->keyName("id");
+            $msg .= $table->keyValue($id);
+            $msg .= $table->noDelete(true);
+            $msg .= $table->columnRead("Author Name", "author", 300, 0);
+            $msg .= $table->columnRead("E-Mail", "email", 300, 0);
+            $msg .= $table->columnRead("Comment", "comment", 3000, 1);
+            $msg .= $table->columnRead("Created Date", "created", 50, 0);
+            $msg .= $table->DropDownSelf("Display State", "displayState");
+            $msg .= $table->debugEditData(true);
+            $msg .= $table->sqlWhere(" where $keyName = '$keyValue' ");
+            //$msg .= $table->debugList(true);;
+            $msg .= $table->DoAction();
+
+            $action = rrwParam::String("action", $attributes, "");
+            if (empty($action))
+                $action = "list";
+            $table->DoAction();
+            return $msg;
+        } else {
+            $msg .= " $errorBeg E#2280 Missing author or created date or comment ID $errorEnd ";
+        }
         return $msg;
-    }
+    } // end function editComment
 
     private static function displayForm($id): string
     {
@@ -345,7 +386,36 @@ class creative_edit
         $commentSuccessful = "$eol$eol Thank you for your comment! It has been submitted successfully. $eol ";
         $attributes = array("id"  => "$nudge_id");
         if ($debugProcessing) $msg .= rrwUtil::print_r($attributes, true, "Attributes for displayLookFor after comment submission");
+        $msg .= self::sendEmail($author, $nudge_id, $comment);
         return $msg;
     } // end function ProcessComment
+    private static function sendEmail($author, $nudge_id, $comment)
+    {
+        $eol = "<br>\n";
+        $msg = "";
+        //print "sendEmail($cntBad, $cntTotal, $emailMsg)$eol";
+        ini_set("display_errors", "1");
+        $mail = setMailCredentials();
+        $to1 = "creativeCommentt@royweil.com";
+        $to2 = "creativeCommentt@maryshaw.org";
+        $fromEmail = "no-reply@creative-nudges.com";
+        // $mail->isHTML(true);
+        $mail->setFrom($fromEmail, "Creative Nudges New Comment Notification");
+        $mail->addAddress($to1);
+        $mail->addAddress($to2);
+        $mail->Subject = "Creative Nudges New Comment Notification ";
+        $mail->Body = "A new comment was just submitted on the Creative Nudges website. \n" .
+            "Please go to https://creative-nudges.com/pending to approve/defer. \n\n";
+
+        $result = $mail->send();
+        if ($result) {
+            // $msg .= "Email sent to $to1 with subject" . $mail->Subject . $eol;
+        } else {
+            $msg .= "Email failed to send to $to1 with subject - Subject: " . $mail->Subject . $eol;
+            $errorMsg = $mail->ErrorInfo;
+            $msg .= "Error is $errorMsg $eol";
+        }
+        return $msg;
+    } // end function <sendEmail>
 
 } // end class creative_edit
