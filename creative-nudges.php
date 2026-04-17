@@ -33,6 +33,7 @@ require_once "get-citation.php";
 require_once "edit_nudges.php";
 require_once "storeDisplay.php";
 require_once "pending.php";
+require_once "homepage.php";
 error_reporting(E_ALL);
 ini_set("display_errors", true);
 global $eol, $errorBeg, $errorEnd;
@@ -300,6 +301,7 @@ add_shortcode('reference_display', array('creative_nudges', 'ReadReferencesDispl
 add_shortcode('reference_check', array('creative_nudges', 'ReadReferencesCheck'));
 add_shortcode("creative_store", array('creative_store', 'displayPage'));
 add_shortcode("creative_categories", array('creative_store', 'displayCategories'));
+add_shortcode("creative-homepage", array('homepage', 'displayHomePage'));
 add_shortcode('citation_lookup_title', function ($attribute) {
     $title = '';
     try {

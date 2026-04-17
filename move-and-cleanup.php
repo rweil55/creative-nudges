@@ -1,6 +1,4 @@
 <?php
-print "start of cleanup" . PHP_EOL;
-print "" . PHP_EOL;
 require_once "C:/inetpub/wwwroot/wx/website/ftpCredentials.php";
 require_once "rrwParam.php";
 /*   print DoReferences() . PHP_EOL;

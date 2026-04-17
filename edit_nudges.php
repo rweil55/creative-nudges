@@ -94,12 +94,15 @@ class creative_edit
 
         if ($debugCard) $msg .= "into displayLookFor #2 with lookFor = '$lookFor' $eol";
         if (empty($lookFor)) {
-            $msg .= " $errorBeg E#2270 Missing search term $errorEnd ";
-            return $msg;
+            $sqlWhere = "SELECT FLOOR(RAND()*71)";
+            $newId = $wpdb->get_var($sqlWhere);
+            $sqlCard = "SELECT * FROM " . creative_nudges::$DatabaseNudges .
+                " where id = $newId ";
+        } else {
+            $sqlWhere = creative_nudges::buildWhere($lookFor);
+            $sqlCard = "SELECT * FROM " . creative_nudges::$DatabaseNudges .
+                " $sqlWhere ORDER BY type, id ";
         }
-        $sqlWhere = creative_nudges::buildWhere($lookFor);
-        $sqlCard = "SELECT * FROM " . creative_nudges::$DatabaseNudges .
-            " $sqlWhere ORDER BY type, id ";
         if ($debugCard) $msg .= " $eol SQL to find nudge: $sqlCard $eol";
         $cards = $wpdb->get_results($sqlCard, ARRAY_A);
         if (null == $cards || 0 == count($cards)) {
@@ -119,9 +122,19 @@ class creative_edit
         $id = $card["id"];
 
         if ($debugCard) $msg .= "found id = " . $id . $eol;
-        $msg .= creative_nudges::buildImage($card, "400px", "center");
+        $msg .= creative_nudges::buildImage($card, "300px", "center");
 
-        $msg .= self::displayComments($id);
+        $thisUrl = $_SERVER["REQUEST_URI"];
+        if (true == strpos($thisUrl, "home")) {
+            if (creative_nudges::allowedToEdit()) {
+                $msg .= "<br>Click card to comment";
+            }
+            return $msg;
+        }
+        $thisUrl = $_SERVER["REQUEST_URI"];
+        if ($debugCard) $msg .= " this url is $thisUrl $eol";
+
+        $msg .= "<br>" . self::displayComments($id);
         $msg .= self::displayForm($id);
         if (creative_nudges::allowedToEdit()) {
             unset($_POST["submitButton"]);
@@ -313,14 +326,14 @@ class creative_edit
             }
         </script>";
         $msg .= "<h3> Comment on the above nudge</h3> $eol";
-        $msg .= "<form method='post' action=''> \n";
+        $msg .= "<form class='creative-nudges-input;' method='post' action=''> \n";
         $msg .= "<input type='hidden' name='nudge_id' id='nudge_id' value='$id' /> ";
-        $msg .= "Name: <input type='text' name='author' id='author' size='30' OnLostFocus='enableSubmitButton();' /> $eol";
+        $msg .= "Name: <input class='creative-nudges-button'type='text' name='author' id='author' size='30' OnLostFocus='enableSubmitButton();' /> $eol";
         $msg .= "E-Mail Address: <input type='email' name='email' id='email' size='30' /> $eol";
         $msg .= "Comment: <br/> ";
         $fieldNameCount = 3000;
         $requestSize = 3000;
-        $msg .= "<textarea name='Comment' id='Comment'  style='resize:both;' cols='200' rows='4' \n
+        $msg .= "<textarea name='Comment' id='Comment'  style='resize:both;' cols='80' rows='4' \n
                                     maxsize='$requestSize' onkeyup='countCharacters(this, \"$fieldNameCount\", $requestSize);'
                                     onLostFocus='enableSubmitButton();' $requestSize = 3000;> </textarea> $eol
                                     <span id='$fieldNameCount'> 0/$requestSize</span>$eol";
@@ -329,7 +342,10 @@ class creative_edit
                         communicate about this website. Your data will not be shared with third parties.
                         You can request its deletion at any time.
                         For full details, please read our <a href='https://creative-nudges.com/privacy-policy/' target='privacy' > Privacy Policy</a>.$eol";
-        $msg .= "<input type='submit' name='submitButton' id='submitButton'value='Send Comment for Approval' /> $eol";
+        $msg .= "<input class='creative-nudges-input;'
+                        style=' background: #a1dcf7; font-weight: bold; color: black; padding: 10px 20px; box-shadow: none;
+                            border:none; border-radius: 10px; cursor: pointer;'
+                        type='submit' name='submitButton' id='submitButton'value='Send Comment for Approval' /> $eol";
         $msg .= "</form> $eol";
 
         return $msg;
