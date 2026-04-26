@@ -51,11 +51,11 @@ class homepage
     }
 .creative-nudge-menu {
     float: right;
-    align: right;
+    text-align: right;
 }
     .creative-nudges-wp-button {
-    height=px; important;
-    width=160px; important;
+    height: 40px !important;
+    width: 160px !important;
     }
 
 
@@ -67,8 +67,9 @@ class homepage
             $homePageText = new storePageTexts();
         else
             $homePageText = new homePageTexts();
-        $msg .= "<table><tr>
-<td width=$lastPercent" . "% >";
+        $msg .= "<table>
+<tr>
+    <td width=$lastPercent" . "% >";
         $msg .= $homePageText::c1r1();
         $msg .= self::td($lastPercent, 1, 1);
         $msg .= $homePageText::c2r1();
@@ -84,9 +85,9 @@ class homepage
         $msg .= $homePageText::c1r4();
         $msg .= self::td($lastPercent, 1, 4);
         $msg .= $homePageText::c2r4();
-        $msg .= "</td></tr></table>
-        <tr><hr style='border:3px solid #365c82;' /></tr>
-        </table>";
+        $msg .= "   </td>
+</tr>
+</table>";
         return $msg;
     }
     public  static function td(&$lastPercent, $col, $row)
@@ -148,7 +149,8 @@ class homePageTexts
     public static function c1r3()
     {
         $msg =  "";
-        $msg = self::$imageScale . " src='https://creative-nudges.com/wp-content/uploads/2026/04/Lblob-fan.png' />" . self::$eol;
+        $msg = self::$imageScale . " src='https://creative-nudges.com/wp-content/uploads/2026/04/Lblob-fan.png'
+                                    alt='an image display of six cards with the front and back text' />" . self::$eol;
         return $msg;
     }
     public static function c1r4()
@@ -234,7 +236,8 @@ class storePageTexts
     public static function c1r1()
     {
         $msg =  "";
-        $msg =  self::$imageScale . "src='https://creative-nudges.com/wp-content/uploads/2026/04/ULblob-boxfan.png' />" . self::$eol;
+        $msg =  self::$imageScale . "src='https://creative-nudges.com/wp-content/uploads/2026/04/ULblob-boxfan.png'
+                    alt='an image of the creative nudges box, along with a fan of the card deck' />" . self::$eol;
         return $msg;
     }
     public static function c1r2()
@@ -256,7 +259,8 @@ class storePageTexts
     public static function c1r3()
     {
         $msg =  "";
-        $msg = self::$imageScale . " src='https://creative-nudges.com/wp-content/uploads/2026/04/Lblob-fan.png' />" . self::$eol;
+        $msg = self::$imageScale . " src='https://creative-nudges.com/wp-content/uploads/2026/04/Lblob-fan.png'
+                                    alt='an image display of sixx cards with the front and back text' />" . self::$eol;
         return $msg;
     }
     public static function c1r4()
@@ -265,7 +269,7 @@ class storePageTexts
         $msg = "<p style='padding:10px; vertical-align:center;'>
                     <p class='creative-nudges-header2' >What else should we sell</p>
                     <p>Hats, T-Shirts, Mugs, Posters, mouse pads,Shampoo, skin care, Sneakers, and boots  </p>
-                    <p>Soap that as it wears done reveals a new nudge</p>
+                    <p>Soap that as it wears down reveals a new nudge</p>
                     <p>Exorbitantly over-priced custom t-shirts/poly with the front and back of your favorite card on the front and back</p>
                     <p>Other stuff that we haven’t thought of yet</p>
                     <p><button  class='creative-nudges-button' ><a class='creative-nudges-link' href='/contact/'>Contact us with your ideas</a></button>
@@ -316,10 +320,10 @@ class storePageTexts
                 <td class='creative-nudges-wp-button'>[wp_paypal button='cart' name='10 or more decks' amount='11.99'
                         button_image ='https://creative-nudges.com/wp-content/uploads/2026/04/cartButton.png' ] </td>
             </tr><tr><td>&nbsp; </td></tr><tr >
-            <table>
-            <p>Sorry, this is for shipping to US postal addresses only.  We also sell on
-                <a href='https://www.amazon.com/s?k=0972732470'>Amazon</a>, which is better able to
-                handle the complexity of international shipping.
+            </table>
+            <p>Sorry, this is for shipping to US postal addresses only.  We also sell on <strong>
+                <a href='https://www.amazon.com/s?k=0972732470'>Amazon</a></strong>, which is better able to
+                handle the <i>complexities of international shipping</i>
                 </p>
         </p>"
         );
@@ -337,7 +341,7 @@ class storePageTexts
         $msg .= do_shortcode(
             "<p style='padding:10px; vertical-align:center;'>
                     <p class='creative-nudges-header2'>Get push notifications</p>
-                <table><tr' >
+                <table><tr >
                     <td>A different card from the deck will be emailed overnight for 70 days. The arrival time depends on the
                         vagaries of the e-mail system.$10/e-mail address includes sales tax, emailing, and handling.</td>
                     <td  width='160px' >[wp_paypal button='cart' name='email every night' amount='10.00'
