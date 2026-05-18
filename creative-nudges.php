@@ -51,7 +51,7 @@ class creative_nudges
     {
         ini_set('display_errors', true);
     }
-    private static function displaySql($sql, $size, $align)
+    private static function displaySql(string $sql, string $size, string $align): string
     {
         global $wpdb;
         $eol = "<br/>\n";
@@ -162,15 +162,6 @@ class creative_nudges
         } else {
             $align = "center";
         }
-        $imageHTML .= "
-<style>
-.card{
-width:400px !important;
-height:auto !important;
-margin-right:10px;
-}
-</style>
-";
         if (empty($searchThing)) {
             // no search term so display a random image
             $image = self::getRandomImage();
@@ -203,7 +194,7 @@ margin-right:10px;
      * @return mixed Returns the image data from the database query result
      *
      */
-    public static function getRandomImage($attributes)
+    public static function getRandomImage(array $attributes)
     {
         $debugRandom = rrwParam::isDebugMode("debugRandom");
         $size = rrwParam::String('size', $attributes, '300px');
@@ -332,8 +323,8 @@ add_shortcode('isbn_citation', function ($attribute) {
 add_shortcode(
     'citation',
     function ($attribute) {
+        $msg = "";
         try {
-            $msg = "";
             $doi = rrwParam::String('doi', $attribute);
             $isbn = rrwParam::String('isbn', $attribute);
             $style = rrwParam::String('style', $attribute, 'chicago-note-bibliography');

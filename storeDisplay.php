@@ -17,15 +17,6 @@ class creative_store
         $button4 = '<button>Buy Now</button>';
         $button5 = '<button>Subscribe</button>';
         //
-        $msg .= "
-<style>
-.card{
-width:100% !important;
-height:auto !important;
-margin-right:10px;
-}
-</style>
-";
         $msg .= "<h1>Welcome to the Creative Nudges&trade;Store</h1>
         	<table>
 		<tr>

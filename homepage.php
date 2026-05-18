@@ -7,60 +7,7 @@ class homepage
 
         ini_set("display_errors", true);
         error_reporting(E_ALL);
-        $msg .= "
-<style>
-.creative-nudges-header2 {
-    font-size: larger;
-    font-weight: bold;
-    font-style: italic;
-    }
-.creative-nudges-button {
-        background: #a1dcf7;
-        font-weight: bold;
-        color: black;
-        padding: 10px 20px;
-        border: none;
-        box-shadow: none;
-        border-radius: 10px;
-        cursor: pointer;
-    }
-.creative-nudges-link {
-        background: #a1dcf7;
-        font-weight: bold;
-        color: black;
-        padding: 10px 20px;
-        border: none;
-        box-shadow: none;
-        border-radius: 10px;
-        cursor: pointer;
-    }
-.creative-nudges-button a {
-        text-decoration: none;
-        font-weight: bold;
-        color: black;
-   }
-.creative-nudges-input {
-        background: #a1dcf7;
-        font-weight: bold;
-        color: black;
-        padding: 10px 20px;
-        box-shadow: none;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-    }
-.creative-nudge-menu {
-    float: right;
-    text-align: right;
-}
-    .creative-nudges-wp-button {
-    height: 40px !important;
-    width: 160px !important;
-    }
 
-
-</style>
-    ";
         $lastPercent = 40;
         $pagename = $_SERVER['REQUEST_URI'];
         if (true == strpos($pagename, "store"))
@@ -291,16 +238,7 @@ class storePageTexts
         $msg = " <p >$rrw_trail_menuText </p>";
         $msg .= do_shortcode(
             "
-            <style>
-            .creative-nudges-store-amounts {
-                padding-right: 30px;
-                padding-left: 20px;
-                margin-right: 30px;
-                vertical-align: top;
-            }
-            </style>
-
-        <p style='padding:20px; vertical-align:center;'>
+            <p style='padding:20px; vertical-align:center;'>
             <p class='creative-nudges-header2' >Order full decks for US delivery</p>
             <p>Each deck has a full set of 70 creative nudges</p>
             <table>
