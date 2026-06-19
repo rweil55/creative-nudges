@@ -1,3 +1,6 @@
+<script
+    src="https://www.paypal.com/sdk/js?client-id=BAATIlHL1b5DSsQOdddC6L20v1zBoUYnKOEtJ5Y-yiUyYwJL7Mqn4Xr5vPdJ0nQickpwg87BPU1xCUpGeg&components=hosted-buttons&enable-funding=venmo&currency=USD">
+</script>
 <?php
 class homepage
 {
@@ -117,7 +120,6 @@ class homePageTexts
                     <button class='creative-nudges-button' ><a class='creative-nudges-link' href= '/references/'>Show the references</a></button>
                 </td><td>
                     <button class='creative-nudges-button' ><a class='creative-nudges-link' href='/booklet/'>Print the booklet</a></button> &nbsp;
-                    <button class='creative-nudges-button' ><a class='creative-nudges-link' href='/store/'>Add to Cart</a></button>
                 </td></tr></table>";
         return $msg;
     }
@@ -196,10 +198,8 @@ class storePageTexts
                         $5.00 includes shipping and handling.</p>
                     <table><tr><td>
                         <button  class='creative-nudges-button' ><a class='creative-nudges-link' href='/booklet/'> Print the booklet (free)</a></button>
-                    </td><td class='creative-nudges-wp-button'>
-                        [wp_paypal button='cart' name='20 page booklet' amount='5.00'
-                                button_image ='https://creative-nudges.com/wp-content/uploads/2026/04/cartButton.png'] </td>
-                    </td></tr></table>
+                    </td>
+                    </tr></table>
                 </p>");
         return $msg;
     }
@@ -235,36 +235,31 @@ class storePageTexts
             'echo' => false
         ));
         $rrw_trail_menuText = str_replace("container", "container creative-nudge-menu", $rrw_trail_menuText);
-        $msg = " <p >$rrw_trail_menuText </p>";
-        $msg .= do_shortcode(
+        $msg .= " <p >$rrw_trail_menuText </p>";
+        $msg .=
             "
             <p style='padding:20px; vertical-align:center;'>
             <p class='creative-nudges-header2' >Order full decks for US delivery</p>
             <p>Each deck has a full set of 70 creative nudges</p>
-            <table>
-            <tr class='creative-nudges-store-amounts;' >
-                <td class='creative-nudges-store-amounts'>&nbsp; </td>
-                <td><br>1-5 decks, @19.99/deck,includes tax, US shipping, handling </td>
-                <td class='creative-nudges-wp-button' >[wp_paypal button='cart' name='1 deck' amount='19.99'
-                        button_image ='https://creative-nudges.com/wp-content/uploads/2026/04/cartButton.png'] </td>
-            </tr><trclass='creative-nudges-store-amounts;'><td>&nbsp; </td></tr><tr >
-                <td class='creative-nudges-store-amounts'>&nbsp; </td>
-                <td ><br>6-9 decks, $15.99/deck 20% discount includes tax, US shipping, handling</td>
-                <td class='creative-nudges-wp-button'>[wp_paypal button='cart' name='6-9 decks' amount='19.99'
-                        button_image ='https://creative-nudges.com/wp-content/uploads/2026/04/cartButton.png'] </td>
-            </tr><tr class='creative-nudges-store-amounts;'><td>&nbsp; </td></tr><tr >
-                <td class='creative-nudges-store-amounts'>&nbsp; </td>
-               <td><br>10 or more decks, $11.99/deck + shipping, 40% commercial/non-pofit discount, sales tax form required </td>
-                <td class='creative-nudges-wp-button'>[wp_paypal button='cart' name='10 or more decks' amount='11.99'
-                        button_image ='https://creative-nudges.com/wp-content/uploads/2026/04/cartButton.png' ] </td>
-            </tr><tr><td>&nbsp; </td></tr><tr >
-            </table>
+            <p>";
+        $msg .= '<div id="paypal-container-P7DBVL34VGMYU"></div>
+<script>
+  paypal.HostedButtons({
+    hostedButtonId: "P7DBVL34VGMYU",
+  }).render("#paypal-container-P7DBVL34VGMYU")
+</script></p>
+    ';
+        $msg .= "
+            <p>
+                <strong>6-9 decks, $15.99/deck</strong> 20% discount includes tax, US shipping, handling<br>
+                <strong>10 or more decks, $11.99/deck</strong> + shipping, 40% commercial/non-profit discount, sales tax form required <br>
+                Quantities greater than 6 should be ordered by email at <a href='mailto:orders@creative-nudges.com'>orders@creative-nudges.com</a>
+            </p>
             <p>Sorry, this is for shipping to US postal addresses only.  We also sell on <strong>
                 <a href='https://www.amazon.com/s?k=0972732470'>Amazon</a></strong>, which is better able to
                 handle the <i>complexities of international shipping</i>
                 </p>
-        </p>"
-        );
+        ";
         return $msg;
     }
     public static function c2r2()

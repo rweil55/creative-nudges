@@ -17,7 +17,7 @@ Requires at least: 6.8.3
 Tested up to: 6.8.3
 Stable tag: 1.1.2	// change in .patch indicates a data, but not the code
 License: private
-Version: 2.1.1
+Version: 2.1.3
 Text Domain: creative-nudges
 Domain Path: /lang
 */
@@ -339,4 +339,15 @@ add_shortcode(
         }
         return $msg;
     }
+);  // end citation shortcode
+
+// 	*******************************  check for updates to the roy-header theme
+require 'plugin-update-checker-5.7/plugin-update-checker.php';
+
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
+$myUpdateChecker = PucFactory::buildUpdateChecker(
+    'https://pluginserver.royweil.com/creative-nudges.php',
+    __FILE__,
+    'creative-nudges'
 );
